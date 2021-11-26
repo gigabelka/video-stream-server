@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<title>My server</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<link rel="shortcut icon" href="favicon.png" type="image/png">
+	<script src="jquery.js"></script>
+</head>
+
+<body style="background-color: gray; overflow-y: hidden; overflow-x: hidden;">
+	<center>
+		<img src="/motion/live/1">
+	</center>
+
+	<script>
+		$(document).ready(function () {
+
+			var resize = function () {
+				var height = $(window).height();
+				var width = $(window).width();
+				var ratio = width / height;
+
+				if (ratio == 4 / 3) {
+					$('img').css({
+						height: width - 20 + 'px',
+						width: width - 20 + 'px',
+					});
+				}
+				else if (ratio > 4 / 3) {
+					$('img').css({
+						height: height - 20 + 'px',
+						width: 'auto',
+					});
+				}
+				else if (ratio < 4 / 3) {
+					$('img').css({
+						height: 'auto',
+						width: width - 20 + 'px',
+					});
+				}
+			}
+
+			$(window).resize(function () {
+				resize();
+			});
+
+			resize();
+		});
+	</script>
+</body>
+
+</html>
