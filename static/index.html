@@ -3,7 +3,7 @@
 <html>
 
 <head>
-	<title>My server</title>
+	<title id="title"></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<link rel="shortcut icon" href="favicon.png" type="image/png">
@@ -31,9 +31,15 @@
 				img.src = `data:image/jpg;base64,${data}`;
 			});
 
-			// socket.on('motion', function(data) {
-			// 	console.log('motion');
-			// });
+			socket.on('motion', function(data) {
+				if(data){
+					$('#title').html('Motion');
+					$('#canvas').css({border: '3px solid red'});
+				} else {
+					$('#title').html('No motion');
+					$('#canvas').css({border: '0'});
+				}
+			});
 
 			var resize = function () {
 				var height = $(window).height();
@@ -70,3 +76,5 @@
 </body>
 
 </html>
+
+<!-- http://localhost:3000/motion?move=yes(no) -->
