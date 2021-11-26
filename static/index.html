@@ -13,20 +13,27 @@
 
 <body style="background-color: gray; overflow-y: hidden; overflow-x: hidden;">
 	<center>
-		<img src="http://192.168.0.11/motion/live/1">
+		<!-- <img src="http://192.168.0.11/motion/live/1"> -->
+		<canvas id="canvas" width="640" height="480">
 	</center>
 
 	<script>
 		$(document).ready(function () {
 			var socket = io.connect('http://localhost:3000');
+			var canvas = document.getElementById('canvas');
+    		var context = canvas.getContext('2d');
 
 			socket.on('image', function(data) {
-				console.log('image');
+				var img = new Image();
+				img.onload = function () {
+					context.drawImage(img, 0, 0);
+				};
+				img.src = `data:image/jpg;base64,${data}`;
 			});
 
-			socket.on('motion', function(data) {
-				console.log('motion');
-			});
+			// socket.on('motion', function(data) {
+			// 	console.log('motion');
+			// });
 
 			var resize = function () {
 				var height = $(window).height();
@@ -34,19 +41,19 @@
 				var ratio = width / height;
 
 				if (ratio == 4 / 3) {
-					$('img').css({
+					$('#canvas').css({
 						height: width - 20 + 'px',
 						width: width - 20 + 'px',
 					});
 				}
 				else if (ratio > 4 / 3) {
-					$('img').css({
+					$('#canvas').css({
 						height: height - 20 + 'px',
 						width: 'auto',
 					});
 				}
 				else if (ratio < 4 / 3) {
-					$('img').css({
+					$('#canvas').css({
 						height: 'auto',
 						width: width - 20 + 'px',
 					});
