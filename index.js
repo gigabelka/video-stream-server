@@ -2,18 +2,30 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const httpServer = http.createServer(app);
-const path = require('path');
 const { Server } = require("socket.io");
 const io = new Server(httpServer);
 const mjpegDecoder = require('mjpeg-decoder');
+const TelegramBot = require('node-telegram-bot-api');
+const dayjs = require('dayjs');
+const token = require('./myPassword').token;
+const chatId = require('./myPassword').chatId;
 
+const bot = new TelegramBot(token, {polling: true});
 const PORT = 3000;
 const streamURL = 'http://192.168.0.11/motion/live/1';
 let sleepTime = 60000;
 let moveTime = 100;
 let motion = false;
 let frame = null;
+const updtTime = 10000;
+let timer = null;
 let decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
+
+const autoUpdate = () => {
+    bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
+    clearTimeout(timer);
+    timer = setTimeout(autoUpdate, updtTime);
+};
 
 const getFrame = async function () {
     decoder.on('frame', (frm, seq) => {
@@ -30,17 +42,18 @@ const getFrame = async function () {
 
     decoder.on('abort', (reason, err) => {
         if (motion){
-            decoder = new mjpegDecoder(streamURL, { interval: moveTime });
             console.log('motion');
+            decoder = new mjpegDecoder(streamURL, { interval: moveTime });
+            autoUpdate();
         } else {
-            decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
             console.log('no motion');
+            decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
+            clearTimeout(timer);
         }
         getFrame();
     });
 
     decoder.start();
-    // decoder.stop();
 };
 
 app.use('/', express.static(__dirname + '/static'));
