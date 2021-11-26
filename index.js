@@ -7,16 +7,14 @@ const { Server } = require("socket.io");
 const io = new Server(httpServer);
 const mjpegDecoder = require('mjpeg-decoder');
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const streamURL = 'http://192.168.0.11/motion/live/1';
 let updtTime = 1000;
-let timer = null;
 let motion = false;
 let frame = null;
+const decoder = new mjpegDecoder(streamURL, { interval: updtTime });
 
-const getFrame = async function (interval) {
-    const decoder = new mjpegDecoder(streamURL, { interval: interval });
-
+const getFrame = async function () {
     decoder.on('frame', (frm, seq) => {
         frame = frm;
         const image = frm.toString('base64');
@@ -28,6 +26,7 @@ const getFrame = async function (interval) {
     });
 
     decoder.start();
+    // decoder.stop();
 };
 
 app.use('/', express.static(__dirname + '/static'));
@@ -35,5 +34,5 @@ app.use('/', express.static(__dirname + '/static'));
 
 httpServer.listen(PORT, () => {
     console.log(`HTTP server listening at http://localhost:${PORT}`)
-    getFrame(updtTime);
+    getFrame();
 });
