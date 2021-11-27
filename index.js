@@ -62,9 +62,11 @@ app.get('/motion', (req, res) => {
     if(req.query.move == 'yes'){
         motion = true;
         decoder.stop();
+        res.send(true);
     } else {
         motion = false;
         decoder.stop();
+        res.send(false);
     }
 });
 
