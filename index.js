@@ -7,24 +7,25 @@ const io = new Server(httpServer);
 const mjpegDecoder = require('mjpeg-decoder');
 const TelegramBot = require('node-telegram-bot-api');
 const dayjs = require('dayjs');
-const token = require('./myPassword').token;
-const chatId = require('./myPassword').chatId;
+const token = require('./myPassword').token; // require('./password').token
+const chatId = require('./myPassword').chatId; // require('./password').chatId
 
+const port = 3000; // http server port
+const streamURL = 'http://192.168.0.11/motion/live/1'; // external url video stream
+const sleepTime = 60000; // time without motion
+const moveTime = 100; // time with motion
+const telebotTime = 10000; // TelegramBot time update foto
 const bot = new TelegramBot(token, {polling: true});
-const PORT = 3000;
-const streamURL = 'http://192.168.0.11/motion/live/1';
-let sleepTime = 60000;
-let moveTime = 100;
+
 let motion = false;
 let frame = null;
-const updtTime = 10000;
 let timer = null;
 let decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
 
 const autoUpdate = () => {
     bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
     clearTimeout(timer);
-    timer = setTimeout(autoUpdate, updtTime);
+    timer = setTimeout(autoUpdate, telebotTime);
 };
 
 const getFrame = async function () {
@@ -67,9 +68,7 @@ app.get('/motion', (req, res) => {
     }
 });
 
-httpServer.listen(PORT, () => {
-    console.log(`HTTP server listening at http://localhost:${PORT}`)
+httpServer.listen(port, () => {
+    console.log(`HTTP server listening at http://localhost:${port}`)
     getFrame();
 });
-
-// http://localhost:3000/motion?move=yes(no)
