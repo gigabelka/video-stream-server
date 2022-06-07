@@ -18,13 +18,13 @@
 
 	<script>
 		$(document).ready(function () {
-			var url = 'http://localhost:3000';
-			var socket = io.connect(url);
-			var canvas = document.getElementById('canvas');
-    		var context = canvas.getContext('2d');
+			const url = window.location.href;
+			const socket = io.connect(url);
+			const canvas = document.getElementById('canvas');
+    		let context = canvas.getContext('2d');
 
 			socket.on('image', function(data) {
-				var img = new Image();
+				let img = new Image();
 				img.onload = function () {
 					context.drawImage(img, 0, 0);
 				};
@@ -41,10 +41,10 @@
 				}
 			});
 
-			var resize = function () {
-				var height = $(window).height();
-				var width = $(window).width();
-				var ratio = width / height;
+			let resize = function () {
+				let height = $(window).height();
+				let width = $(window).width();
+				let ratio = width / height;
 
 				if (ratio == 4 / 3) {
 					$('#canvas').css({

@@ -4,7 +4,8 @@
   "description": "video-stream-server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,8 +18,10 @@
   },
   "homepage": "https://github.com/gigabelka/video-stream-server#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dayjs": "^1.10.7",
     "express": "^4.17.1",
+    "internet-available": "^1.0.0",
     "mjpeg-decoder": "^1.0.3",
     "node-telegram-bot-api": "^0.54.0",
     "nodemon": "^2.0.15",
