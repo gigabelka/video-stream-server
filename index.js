@@ -128,7 +128,7 @@ bot.on('message', msg => {
                     bot.sendMessage(chatId, `/cam_${SplitMsg[1]}_${file} (${(size / 1024 / 1024).toFixed(2)} Mb)`);
                 });
             } else if (SplitMsg.length == 3 && SplitMsg[0] == '/cam'){
-                bot.sendVideo(chatId, `./cam/${SplitMsg[1]}/${SplitMsg[2]}.mkv`);
+                bot.sendVideo(chatId, `./cam/${SplitMsg[1]}/${SplitMsg[2]}.mp4`);
             };
         }
     });
