@@ -9,8 +9,9 @@ const mjpegDecoder = require('mjpeg-decoder');
 const TelegramBot = require('node-telegram-bot-api');
 const dayjs = require('dayjs');
 const token = require('./myPassword').token; // require('./password').token
-const chatId = require('./myPassword').chatId; // require('./password').chatId
+const chatIds = require('./myPassword').chatIds; // require('./password').chatIds
 const os = require('os');
+const fs = require('fs');
 const internetAvailable = require("internet-available");
 
 const port = 3000; // http server port
@@ -32,9 +33,15 @@ let decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
 let isInternet = true;
 let lostPolling = false;
 
+const sendPhoto = () => {
+    chatIds.forEach(chatId => {
+        bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
+    });
+};
+
 const autoUpdate = () => {
     if(!lostPolling && isInternet){
-        bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
+        sendPhoto();
     }
     clearTimeout(timer);
     timer = setTimeout(autoUpdate, telebotTime);
@@ -97,6 +104,35 @@ const getFrame = async function () {
 
     decoder.start();
 };
+
+bot.on('message', msg => {
+    chatIds.forEach(chatId => {
+        if(chatId == msg.chat.id){
+            const camFolder = './cam/';
+
+            if(msg.text == '/start'){
+                bot.sendMessage(chatId, '/getdirs Показать все папки с датами');
+            };
+
+            if(msg.text == '/getdirs'){
+                fs.readdirSync(camFolder).forEach(dir => {
+                    bot.sendMessage(chatId, `/cam_${dir}`);
+                });
+            };
+
+            const SplitMsg = msg.text.split('_');
+
+            if(SplitMsg.length == 2 && SplitMsg[0] == '/cam'){
+                fs.readdirSync(`${camFolder}/${SplitMsg[1]}`).forEach(file => {
+                    const {size} = fs.statSync(`./cam/${SplitMsg[1]}/${file}`);
+                    bot.sendMessage(chatId, `/cam_${SplitMsg[1]}_${file} (${(size / 1024 / 1024).toFixed(2)} Mb)`);
+                });
+            } else if (SplitMsg.length == 3 && SplitMsg[0] == '/cam'){
+                bot.sendVideo(chatId, `./cam/${SplitMsg[1]}/${SplitMsg[2]}.mkv`);
+            };
+        }
+    });
+});
 
 app.use(cors({ origin: '*'}));
 
