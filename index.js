@@ -33,15 +33,11 @@ let decoder = new mjpegDecoder(streamURL, { interval: sleepTime });
 let isInternet = true;
 let lostPolling = false;
 
-const sendPhoto = () => {
-    chatIds.forEach(chatId => {
-        bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
-    });
-};
-
 const autoUpdate = () => {
     if(!lostPolling && isInternet){
-        sendPhoto();
+        chatIds.forEach(chatId => {
+            bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
+        });
     }
     clearTimeout(timer);
     timer = setTimeout(autoUpdate, telebotTime);
@@ -111,13 +107,22 @@ bot.on('message', msg => {
             const camFolder = './cam/';
 
             if(msg.text == '/start'){
-                bot.sendMessage(chatId, '/getdirs Показать все папки с датами');
+                bot.sendMessage(chatId, '/getdirs Показать папки\n/getphoto Показать фото', {
+                    reply_markup: {
+                      resize_keyboard: true,
+                      keyboard: [['/getdirs', '/getphoto']],
+                    }
+                });
             };
 
             if(msg.text == '/getdirs'){
                 fs.readdirSync(camFolder).forEach(dir => {
                     bot.sendMessage(chatId, `/cam_${dir}`);
                 });
+            };
+
+            if(msg.text == '/getphoto'){
+                bot.sendPhoto(chatId, frame, {caption: dayjs().format('HH:mm:ss') });
             };
 
             const SplitMsg = msg.text.split('_');
