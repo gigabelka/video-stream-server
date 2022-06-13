@@ -116,9 +116,11 @@ bot.on('message', msg => {
             };
 
             if(msg.text == '/getdirs'){
+                let str = ''
                 fs.readdirSync(camFolder).forEach(dir => {
-                    bot.sendMessage(chatId, `/cam_${dir}`);
+                    str = str + `/cam_${dir}\n` 
                 });
+                bot.sendMessage(chatId, str);
             };
 
             if(msg.text == '/getphoto'){
@@ -128,12 +130,14 @@ bot.on('message', msg => {
             const SplitMsg = msg.text.split('_');
 
             if(SplitMsg.length == 2 && SplitMsg[0] == '/cam'){
+                let str = ''
                 fs.readdirSync(`${camFolder}/${SplitMsg[1]}`).forEach(file => {
                     const {size} = fs.statSync(`./cam/${SplitMsg[1]}/${file}`);
-                    bot.sendMessage(chatId, `/cam_${SplitMsg[1]}_${file} (${(size / 1024 / 1024).toFixed(2)} Mb)`);
+                    str = str + `/cam_${SplitMsg[1]}_${file} (${(size / 1024 / 1024).toFixed(2)} Mb)\n`
                 });
+                bot.sendMessage(chatId, str);
             } else if (SplitMsg.length == 3 && SplitMsg[0] == '/cam'){
-                bot.sendVideo(chatId, `./cam/${SplitMsg[1]}/${SplitMsg[2]}.mp4`);
+                bot.sendVideo(chatId, );
             };
         }
     });
